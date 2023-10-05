@@ -3,7 +3,6 @@ import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import MovieCard from "./MovieCard";
 
 const MovieList = ({ title, movies, rowID }) => {
-  console.log(movies);
   const slideLeft = () => {
     var slider = document.getElementById("slider" + rowID);
     slider.scrollLeft = slider.scrollLeft - 500;
