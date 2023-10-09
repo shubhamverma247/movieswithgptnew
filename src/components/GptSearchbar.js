@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import lang from "../utils/constants/languageConstants";
 import { changeLanguage } from "../utils/slices/configSlice";
@@ -14,6 +14,7 @@ const GptSearchbar = () => {
   const dispatch = useDispatch();
   const langKey = useSelector((store) => store.config.lang);
   const searchText = useRef(null);
+  const [isSearching, setIsSearching] = useState(false);
   const searchMovieTMDB = async (movie) => {
     const data = await fetch(
       "https://api.themoviedb.org/3/search/movie?query=" +
@@ -25,6 +26,7 @@ const GptSearchbar = () => {
     return json.results;
   };
   const handleGptSearchClick = async () => {
+    setIsSearching(true);
     const query = gptQueryStart + searchText.current.value + gptQueryEnd;
     const gptResults = await openai.chat.completions.create({
       messages: [{ role: "user", content: query }],
@@ -43,6 +45,7 @@ const GptSearchbar = () => {
     dispatch(
       addGptMovieResult({ movieNames: gptMovies, movieResults: tmdbResults })
     );
+    setIsSearching(false);
   };
   useEffect(() => {
     return () => dispatch(changeLanguage("en"));
@@ -58,9 +61,10 @@ const GptSearchbar = () => {
           className="m-2 p-2 md:p-3 md:m-3 col-span-9"
           placeholder={lang[langKey].gptSearchPlaceholder}></input>
         <button
+          disabled={isSearching}
           className="col-span-3 m-2 px-2 md:m-2 md:px-2 py-1 bg-red-500 text-white rounded-md md:rounded-lg "
           onClick={handleGptSearchClick}>
-          {lang[langKey].search}
+          {isSearching ? "Searching" : `${lang[langKey].search}`}
         </button>
       </form>
     </div>

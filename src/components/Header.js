@@ -89,12 +89,12 @@ const Header = () => {
             )}
             <button
               onClick={handleToggle}
-              className="bg-[purple] rounded-[5px] px-[10px] sm:py-[6px] py-[6px] text-white hover:bg-opacity-50">
+              className="bg-[purple] rounded-[5px] px-[10px] sm:py-[6px] py-[6px] text-white hover:bg-opacity-90">
               {showGptSearch ? "Home Page" : "GPT Search"}
             </button>
             <button
               onClick={handleSignOut}
-              className="bg-[red] rounded-[5px] px-[10px] sm:py-[6px] py-[6px] text-white hover:bg-opacity-50">
+              className="bg-[red] rounded-[5px] px-[10px] sm:py-[6px] py-[6px] text-white hover:bg-opacity-90">
               Sign Out
             </button>
           </div>
