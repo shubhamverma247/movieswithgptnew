@@ -1,6 +1,7 @@
 import React from "react";
 import MovieList from "./MovieList";
 import { useSelector } from "react-redux";
+import SavedShows from "./SavedShows";
 
 const SecondaryContainer = () => {
   const movies = useSelector((store) => store.movies);
@@ -17,6 +18,7 @@ const SecondaryContainer = () => {
           movies={movies.nowPlayingMovies}
         />
         <MovieList title="Popular" rowID={2} movies={movies.popularMovies} />
+        <SavedShows />
       </div>
     </div>
 

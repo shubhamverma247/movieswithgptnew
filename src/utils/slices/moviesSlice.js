@@ -9,6 +9,7 @@ const moviesSlice = createSlice({
     movieTitle: null,
     movieOverview: null,
     movieKey: null,
+    img: null,
   },
   reducers: {
     addNowPlayingMovies: (state, action) => {
@@ -21,10 +22,11 @@ const moviesSlice = createSlice({
       state.trailerVideo = action.payload;
     },
     addMovieInfo: (state, action) => {
-      const { movieTitle, movieOverview, movieKey } = action.payload;
+      const { movieTitle, movieOverview, movieKey, img } = action.payload;
       state.movieTitle = movieTitle;
       state.movieOverview = movieOverview;
       state.movieKey = movieKey;
+      state.img = img;
     },
   },
 });

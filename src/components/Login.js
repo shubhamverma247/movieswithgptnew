@@ -7,7 +7,8 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { auth, googleProvider } from "../utils/configs/firebase";
+import { setDoc, doc } from "firebase/firestore";
+import { auth, googleProvider, db } from "../utils/configs/firebase";
 import {
   validateSignInForm,
   validateSignUpForm,
@@ -29,7 +30,13 @@ const Login = () => {
   };
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const {
+        _tokenResponse: { email },
+      } = await signInWithPopup(auth, googleProvider);
+      //add data to db
+      setDoc(doc(db, "users", email), {
+        savedShows: [],
+      });
     } catch (err) {
       console.error(err);
     }
@@ -72,6 +79,11 @@ const Login = () => {
         password.current.value
       )
         .then((userCredential) => {
+          //add data to db
+          setDoc(doc(db, "users", email.current.value), {
+            savedShows: [],
+          });
+
           // Signed in
           const user = userCredential.user;
           updateProfile(user, {

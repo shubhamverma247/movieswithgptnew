@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
-import { AiOutlineHeart } from "react-icons/ai";
-
+import { AiOutlineClose, AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { addMoviId, closeModal } from "../utils/slices/modalSlice";
-
+import { db } from "../utils/configs/firebase";
+import { arrayUnion, updateDoc, doc, onSnapshot } from "firebase/firestore";
 import { API_OPTIONS } from "../utils/constants/constants";
 import { addMovieInfo } from "../utils/slices/moviesSlice";
 
 const InfoModal = ({ visible, movieId }) => {
-  console.log(movieId);
+  const user = useSelector((store) => store.user);
   const [isVisible, setIsVisible] = useState(!!visible);
-  const { movieTitle, movieOverview, movieKey } = useSelector(
+  const [isSavedShow, setIsSavedShow] = useState(false);
+  const { movieTitle, movieOverview, movieKey, img } = useSelector(
     (store) => store.movies
   );
   const dispatch = useDispatch();
@@ -22,7 +22,7 @@ const InfoModal = ({ visible, movieId }) => {
       API_OPTIONS
     );
     const json = await data.json();
-    const { overview, original_title } = json;
+    const { overview, original_title, poster_path } = json;
     //second api call to get key
     const data2 = await fetch(
       `https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`,
@@ -40,12 +40,36 @@ const InfoModal = ({ visible, movieId }) => {
         movieTitle: original_title,
         movieOverview: overview,
         movieKey: key,
+        img: poster_path,
       })
     );
   };
   const handleClose = () => {
     dispatch(addMoviId(0));
     dispatch(closeModal());
+    setIsSavedShow(false);
+  };
+
+  movieId != 0 &&
+    onSnapshot(doc(db, "users", `${user?.email}`), (doc) => {
+      setIsSavedShow(
+        doc.data()?.savedShows.filter((item) => item.id === movieId).length > 0
+      );
+    });
+  const MovieId = doc(db, "users", `${user?.email}`);
+
+  const savedShow = async () => {
+    setIsSavedShow(true);
+    await updateDoc(MovieId, {
+      savedShows: arrayUnion({
+        id: movieId,
+        title: movieTitle,
+        discription: movieOverview,
+        key: movieKey,
+        img: img,
+      }),
+    });
+    handleClose();
   };
   useEffect(() => {
     setIsVisible(!!visible);
@@ -78,10 +102,15 @@ const InfoModal = ({ visible, movieId }) => {
                 {movieTitle}
               </p>
               <div className="flex flex-row gap-4 items-center">
-                <div
-                  onClick={() => {}}
-                  className="cursor-pointer group/item w-5 h-5 lg:w-8 lg:h-8 border-white border-2 rounded-full flex justify-center items-center transition hover:border-neutral-300">
-                  <AiOutlineHeart className="text-white group-hover/item:text-neutral-300 w-4 lg:w-5" />
+                <div className="cursor-pointer group/item w-5 h-5 lg:w-8 lg:h-8 border-white border-2 rounded-full flex justify-center items-center transition hover:border-neutral-300">
+                  {isSavedShow ? (
+                    <AiFillHeart className="text-white group-hover/item:text-neutral-300 w-4 lg:w-5" />
+                  ) : (
+                    <AiOutlineHeart
+                      onClick={savedShow}
+                      className="text-white group-hover/item:text-neutral-300 w-4 lg:w-5"
+                    />
+                  )}
                 </div>
               </div>
             </div>
