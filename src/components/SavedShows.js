@@ -34,7 +34,7 @@ const SavedShows = () => {
       console.log(error);
     }
   };
-  if (movies?.length === 0) return null;
+  if (movies?.length === 0 || movies === undefined) return null;
   return (
     <div>
       <h2 className="text-white font-bold md:text-xl p-4">My Shows</h2>
@@ -47,7 +47,7 @@ const SavedShows = () => {
         <div
           id={"slider"}
           className="w-full h-full overflow-x-scroll whitespace-nowrap scroll-smooth scrollbar-hide relative">
-          {movies.map((item) => (
+          {movies?.map((item) => (
             <div
               key={item.id}
               className="w-[128px]  sm:w-[192px]  md:w-[200px] lg:w-[210px] inline-block cursor-pointer relative p-2">
@@ -57,7 +57,7 @@ const SavedShows = () => {
                 alt={item?.title}
               />
               <div className="absolute top-0 left-0 w-full h-full hover:bg-black/80 opacity-0 hover:opacity-100 text-white">
-                <p className="white-space-normal text-xs md:text-sm font-bold flex justify-center items-center h-full text-center">
+                <p className="whitespace-pre-line text-xs md:text-sm font-bold flex justify-center items-center h-full text-center">
                   {item?.title}
                 </p>
                 <p
